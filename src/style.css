@@ -1,12 +1,81 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 :root {
-  --ink: #1d2933;
-  --muted: #64727d;
-  --paper: #f5f3ee;
-  --line: #d8d5ce;
-  --accent: #d4563b;
-  --accent-dark: #a9412d;
+  /* Primitive color tokens: raw, reusable color values. */
+  --color-slate-900: #1d2933;
+  --color-slate-700: #2d3748;
+  --color-slate-500: #64727d;
+  --color-slate-400: #a0aec0;
+  --color-cream-50: #fffdf9;
+  --color-cream-100: #f5f3ee;
+  --color-stone-300: #d8d5ce;
+  --color-green-100: #e5eadc;
+  --color-orange-600: #d4563b;
+  --color-orange-700: #a9412d;
+  --color-red-600: #e53e3e;
+  --color-red-200: #feb2b2;
+  --color-navy-overlay: rgba(26, 32, 44, 0.9);
+  --color-charcoal-950: #121212;
+  --color-navy-900: #1a202c;
+
+  /* Primitive typography and spacing tokens. */
+  --font-family-sans: 'DM Sans', sans-serif;
+  --font-family-display: 'Space Grotesk', sans-serif;
+  --font-size-caption: 0.75rem;
+  --font-size-label: 0.85rem;
+  --font-size-body: 1rem;
+  --font-size-intro: 1.1rem;
+  --font-size-card-title: 1.15rem;
+  --font-size-display: clamp(2.5rem, 7vw, 5.5rem);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 18px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 36px;
+  --space-9: 48px;
+  --space-10: 72px;
+  --radius-small: 4px;
+  --radius-medium: 6px;
+  --border-width: 1px;
+
+  /* Semantic tokens: describe a UI role, not a specific color or size. */
+  --color-text-primary: var(--color-slate-900);
+  --color-text-muted: var(--color-slate-500);
+  --color-text-on-action: var(--color-cream-50);
+  --color-surface-page: var(--color-cream-100);
+  --color-surface-card: var(--color-cream-50);
+  --color-surface-accent: var(--color-green-100);
+  --color-surface-overlay: var(--color-navy-overlay);
+  --color-border-default: var(--color-stone-300);
+  --color-action-primary: var(--color-orange-600);
+  --color-action-primary-hover: var(--color-orange-700);
+  --font-body: var(--font-family-sans);
+  --font-heading: var(--font-family-display);
+  --font-text: var(--font-size-body);
+  --font-label: var(--font-size-label);
+  --font-caption: var(--font-size-caption);
+  --font-intro: var(--font-size-intro);
+  --font-card-title: var(--font-size-card-title);
+  --font-display: var(--font-size-display);
+  --space-control-padding: var(--space-3);
+  --space-card-padding: var(--space-5);
+}
+
+/* The component rules stay unchanged: only semantic-token values change per theme. */
+body.dark-mode {
+  --color-text-primary: var(--color-cream-100);
+  --color-text-muted: var(--color-slate-400);
+  --color-text-on-action: var(--color-cream-50);
+  --color-surface-page: var(--color-charcoal-950);
+  --color-surface-card: var(--color-navy-900);
+  --color-surface-accent: var(--color-navy-900);
+  --color-surface-overlay: var(--color-navy-overlay);
+  --color-border-default: var(--color-slate-700);
+  --color-action-primary: var(--color-red-600);
+  --color-action-primary-hover: var(--color-red-200);
 }
 
 * {
@@ -15,27 +84,33 @@
 
 body {
   margin: 0;
-  color: var(--ink);
-  background: radial-gradient(circle at 80% 0%, #e5eadc 0, transparent 32%), var(--paper);
-  font-family: 'DM Sans', sans-serif;
+  color: var(--color-text-primary);
+  background:
+    radial-gradient(circle at 80% 0%, var(--color-surface-accent) 0, transparent 32%),
+    var(--color-surface-page);
+  font-family: var(--font-body);
+  font-size: var(--font-text);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
 .page-shell {
   width: min(1100px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 48px 0 72px;
+  padding: var(--space-9) 0 var(--space-10);
 }
 
 .hero {
-  border-bottom: 1px solid var(--line);
-  padding: 28px 0 38px;
+  border-bottom: var(--border-width) solid var(--color-border-default);
+  padding: var(--space-7) 0 38px;
 }
 
 .eyebrow,
 .result-count,
 .product-art span {
-  color: var(--accent-dark);
-  font-size: 0.75rem;
+  color: var(--color-action-primary-hover);
+  font-size: var(--font-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -43,33 +118,33 @@ body {
 
 h1,
 h2 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-heading);
 }
 
 h1 {
   max-width: 700px;
-  margin: 10px 0;
-  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  margin: var(--space-3) 0;
+  font-size: var(--font-display);
   line-height: 0.98;
   letter-spacing: 0;
 }
 
 .intro {
-  color: var(--muted);
-  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-intro);
 }
 
 .controls {
   display: grid;
   grid-template-columns: minmax(240px, 1.5fr) minmax(170px, 0.8fr) minmax(170px, 0.8fr);
-  gap: 18px;
+  gap: var(--space-5);
   align-items: end;
   padding: 26px 0 14px;
 }
 
 label {
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-label);
   font-weight: 700;
 }
 
@@ -82,7 +157,7 @@ label {
 .control-actions {
   display: flex;
   grid-column: 1 / -1;
-  gap: 10px;
+  gap: var(--space-3);
   justify-content: flex-end;
 }
 
@@ -94,99 +169,142 @@ input,
 select,
 button {
   min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 12px;
-  color: var(--ink);
-  background: #fffdf9;
+  border: var(--border-width) solid var(--color-border-default);
+  border-radius: var(--radius-small);
+  padding: var(--space-control-padding);
+  color: var(--color-text-primary);
+  background: var(--color-surface-card);
   font: inherit;
 }
 
 button {
-  border-color: var(--accent);
-  color: #fffdf9;
-  background: var(--accent);
+  border-color: var(--color-action-primary);
+  color: var(--color-text-on-action);
+  background: var(--color-action-primary);
   cursor: pointer;
+  margin-left: var(--space-3);
   font-weight: 700;
 }
 
 #show-all-button {
-  border-color: var(--line);
-  color: var(--ink);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
   background: transparent;
 }
 
 #show-all-button:hover,
 #show-all-button:focus-visible {
-  border-color: var(--ink);
-  background: #fffdf9;
+  border-color: var(--color-text-primary);
+  background: var(--color-surface-card);
 }
 
 button:hover,
 button:focus-visible {
-  border-color: var(--accent-dark);
-  background: var(--accent-dark);
+  border-color: var(--color-action-primary-hover);
+  background: var(--color-action-primary-hover);
 }
 
 .result-count {
-  margin: 12px 0 18px;
+  margin: var(--space-3) 0 var(--space-5);
 }
 
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 18px;
+  gap: var(--space-5);
 }
 
 .product-card {
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: #fffdf9;
+  border: var(--border-width) solid var(--color-border-default);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-card);
 }
 
 .product-art {
+  position: relative;
   display: flex;
   min-height: 170px;
+  height: 170px;
   align-items: flex-end;
-  padding: 16px;
+  padding: var(--space-4);
   background: var(--product-color);
+  overflow: hidden;
+}
+
+.product-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
 }
 
 .product-art span {
-  color: var(--ink);
+  position: relative;
+  z-index: 1;
+  color: var(--color-text-primary);
+  background: var(--color-surface-overlay);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-small);
+  font-size: var(--font-caption);
+  font-weight: 700;
 }
 
 .product-info {
-  padding: 18px;
+  padding: var(--space-card-padding);
 }
 
 .product-info h2 {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-card-title);
 }
 
 .product-info p {
   margin: 0;
-  color: var(--accent-dark);
+  color: var(--color-action-primary-hover);
   font-weight: 700;
 }
 
 .empty-state {
   grid-column: 1 / -1;
-  padding: 36px;
-  border: 1px dashed var(--line);
-  color: var(--muted);
+  padding: var(--space-8);
+  border: var(--border-width) dashed var(--color-border-default);
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .search-feedback {
-  margin: 24px 0 0;
-  padding: 16px;
-  border-left: 4px solid var(--accent);
-  color: var(--ink);
-  background: #fffdf9;
+  margin: var(--space-6) 0 0;
+  padding: var(--space-4);
+  border-left: var(--space-1) solid var(--color-action-primary);
+  color: var(--color-text-primary);
+  background: var(--color-surface-card);
   font-weight: 700;
+}
+
+.theme-switch-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -20px;
+}
+
+#theme-toggle {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: var(--border-width) solid var(--color-border-default);
+  font-size: var(--font-label);
+  font-weight: 700;
+  cursor: pointer;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 20px;
 }
 
 @media (max-width: 800px) {
@@ -194,10 +312,7 @@ button:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .field-group--search {
-    grid-column: 1 / -1;
-  }
-
+  .field-group--search,
   .control-actions {
     grid-column: 1 / -1;
   }
@@ -206,17 +321,17 @@ button:focus-visible {
 @media (max-width: 520px) {
   .page-shell {
     width: min(100% - 28px, 1100px);
-    padding-top: 20px;
+    padding-top: var(--space-6);
   }
 
   .controls,
-  .product-grid {
+  .product-grid,
+  .control-actions {
     grid-template-columns: 1fr;
   }
 
   .control-actions {
     display: grid;
-    grid-template-columns: 1fr;
   }
 
   .control-actions button {

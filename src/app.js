@@ -1,108 +1,159 @@
-const products = [
-  { name: 'Kabellose Kopfhörer', category: 'Audio', price: 79.99, color: '#e8d8c3' },
-  { name: 'Mechanische Tastatur', category: 'Zubehör', price: 119.0, color: '#cad8d0' },
-  { name: 'Smartwatch Active', category: 'Wearables', price: 149.99, color: '#d9c8d8' },
-  { name: 'USB-C Dockingstation', category: 'Zubehör', price: 89.5, color: '#d7d9c5' },
-  { name: 'Bluetooth-Lautsprecher', category: 'Audio', price: 54.95, color: '#dfc9b7' },
-  { name: 'Fitness-Tracker', category: 'Wearables', price: 64.99, color: '#c6d6df' },
-  { name: '4K Monitor', category: 'Computer', price: 299.99, color: '#d2d5d8' },
-  { name: 'Gaming-Maus', category: 'Zubehör', price: 49.99, color: '#e1cdd2' },
-  { name: 'Noise-Cancelling Kopfhörer', category: 'Audio', price: 199.99, color: '#c8d9d2' },
-  { name: 'Ergonomische Maus', category: 'Zubehör', price: 39.99, color: '#d5d1c8' },
-  { name: 'Smart Home Hub', category: 'Smart Home', price: 89.0, color: '#e6dfcc' },
-  { name: 'WLAN-Router', category: 'Netzwerk', price: 129.5, color: '#ccd9e2' },
-  { name: 'Externe SSD 1TB', category: 'Speicher', price: 95.0, color: '#dac9cd' },
-  { name: 'Tablet Pro', category: 'Computer', price: 450.0, color: '#d9d9d9' },
-  { name: 'Powerbank 20000mAh', category: 'Zubehör', price: 34.99, color: '#c3d2cd' },
-  { name: 'Webcam 1080p', category: 'Zubehör', price: 59.99, color: '#e1d3c1' },
-  { name: 'Smart-Lampe', category: 'Smart Home', price: 19.99, color: '#eee6d3' },
-  { name: 'In-Ear Kopfhörer', category: 'Audio', price: 45.0, color: '#dcd1e0' },
-  { name: 'Laptop-Ständer', category: 'Zubehör', price: 24.99, color: '#c4cbd3' },
-  { name: 'Gaming-Headset', category: 'Audio', price: 89.9, color: '#e0c8c8' },
-  { name: 'Mikrofon für Podcasts', category: 'Audio', price: 110.0, color: '#d2d8ce' },
-  { name: 'WLAN-Repeater', category: 'Netzwerk', price: 29.99, color: '#dce1eb' },
-  { name: 'USB-Stick 128GB', category: 'Speicher', price: 15.99, color: '#c9d5cc' },
-  { name: 'VR-Brille', category: 'Wearables', price: 349.99, color: '#e5d8e6' },
-  { name: 'Smart-Steckdose', category: 'Smart Home', price: 22.5, color: '#d9dfc2' },
-  { name: 'eBook-Reader', category: 'Computer', price: 119.0, color: '#d0cdc6' },
-  { name: 'Ringlicht mit Stativ', category: 'Zubehör', price: 49.0, color: '#eee2d1' },
-  { name: 'Netzwerkkabel 10m', category: 'Netzwerk', price: 9.99, color: '#cbd2d0' },
-  { name: 'Soundbar', category: 'Audio', price: 159.0, color: '#d3c4d5' },
-  { name: 'Mauspad XXL', category: 'Zubehör', price: 19.99, color: '#c8ced1' }
-];
-
+const productData = window.ProductData;
 const productUtils = window.ProductUtils;
-const searchInput = document.querySelector('#search');
-const categorySelect = document.querySelector('#category');
-const sortSelect = document.querySelector('#sort');
-const searchButton = document.querySelector('#search-button');
-const showAllButton = document.querySelector('#show-all-button');
-const productList = document.querySelector('#product-list');
-const resultCount = document.querySelector('#result-count');
-const searchFeedback = document.querySelector('#search-feedback');
+
+const SEARCH_DELAY_MS = 300;
+const FALLBACK_IMAGE_URL =
+  'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=400&h=300&q=80';
+const priceFormatter = new Intl.NumberFormat('de-DE', {
+  style: 'currency',
+  currency: 'EUR',
+});
+
+const elements = {
+  controls: document.querySelector('.controls'),
+  searchInput: document.querySelector('#search'),
+  categorySelect: document.querySelector('#category'),
+  sortSelect: document.querySelector('#sort'),
+  showAllButton: document.querySelector('#show-all-button'),
+  productList: document.querySelector('#product-list'),
+  resultCount: document.querySelector('#result-count'),
+  searchFeedback: document.querySelector('#search-feedback'),
+  themeToggle: document.querySelector('#theme-toggle'),
+};
+
+const state = {
+  searchTerm: '',
+  category: 'all',
+  sortBy: 'name-asc',
+};
 
 function populateCategories() {
-  const categories = [...new Set(products.map((product) => product.category))].sort();
+  const categories = [
+    ...new Set(productData.products.map((product) => product.category)),
+  ].sort();
 
   categories.forEach((category) => {
     const option = document.createElement('option');
     option.value = category;
     option.textContent = category;
-    categorySelect.append(option);
+    elements.categorySelect.append(option);
   });
 }
 
-function renderProducts() {
-  // Bei jeder Eingabe wird nur die Anzeige aktualisiert; die Seite lädt nicht neu.
-  const filteredProducts = productUtils.filterProducts(
-    products,
-    searchInput.value,
-    categorySelect.value,
-  );
-  const visibleProducts = productUtils.sortProducts(filteredProducts, sortSelect.value);
+function updateStateFromControls() {
+  state.searchTerm = elements.searchInput.value;
+  state.category = elements.categorySelect.value;
+  state.sortBy = elements.sortSelect.value;
+}
 
-  productList.replaceChildren();
-  resultCount.textContent = `${visibleProducts.length} von ${products.length} Produkten`;
-  searchFeedback.textContent = searchInput.value.trim()
-    ? `Suche nach „${searchInput.value.trim()}“: ${visibleProducts.length} Treffer`
+function createProductCard(product) {
+  const card = document.createElement('article');
+  const productArt = document.createElement('div');
+  const image = document.createElement('img');
+  const category = document.createElement('span');
+  const productInfo = document.createElement('div');
+  const name = document.createElement('h2');
+  const price = document.createElement('p');
+
+  card.className = 'product-card';
+  productArt.className = 'product-art';
+  productArt.style.setProperty('--product-color', product.color);
+
+  image.className = 'product-image';
+  image.src = product.imageUrl || FALLBACK_IMAGE_URL;
+  image.alt = product.name;
+  image.loading = 'lazy';
+
+  category.textContent = product.category;
+  productInfo.className = 'product-info';
+  name.textContent = product.name;
+  price.textContent = priceFormatter.format(product.price);
+
+  productArt.append(image, category);
+  productInfo.append(name, price);
+  card.append(productArt, productInfo);
+
+  return card;
+}
+
+function renderProducts() {
+  const filteredProducts = productUtils.filterProducts(
+    productData.products,
+    state.searchTerm,
+    state.category,
+  );
+  const visibleProducts = productUtils.sortProducts(filteredProducts, state.sortBy);
+
+  elements.productList.replaceChildren();
+  elements.resultCount.textContent = `${visibleProducts.length} von ${productData.products.length} Produkten`;
+  elements.searchFeedback.textContent = state.searchTerm.trim()
+    ? `Suche nach „${state.searchTerm.trim()}“: ${visibleProducts.length} Treffer`
     : 'Alle Produkte werden angezeigt.';
 
   if (visibleProducts.length === 0) {
     const emptyMessage = document.createElement('p');
     emptyMessage.className = 'empty-state';
     emptyMessage.textContent = 'Keine passenden Produkte gefunden.';
-    productList.append(emptyMessage);
+    elements.productList.append(emptyMessage);
     return;
   }
 
-  visibleProducts.forEach((product) => {
-    const card = document.createElement('article');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <div class="product-art" style="--product-color: ${product.color}">
-        <span>${product.category}</span>
-      </div>
-      <div class="product-info">
-        <h2>${product.name}</h2>
-        <p>${product.price.toFixed(2).replace('.', ',')} EUR</p>
-      </div>
-    `;
-    productList.append(card);
+  elements.productList.append(...visibleProducts.map(createProductCard));
+}
+
+function updateAndRender() {
+  updateStateFromControls();
+  renderProducts();
+}
+
+function resetFilters() {
+  elements.searchInput.value = '';
+  elements.categorySelect.value = 'all';
+  elements.sortSelect.value = 'name-asc';
+  updateAndRender();
+}
+
+function debounce(callback, delay = SEARCH_DELAY_MS) {
+  let timeoutId;
+
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback(...args), delay);
+  };
+}
+
+function setTheme(theme) {
+  const isDarkMode = theme === 'dark';
+  document.body.classList.toggle('dark-mode', isDarkMode);
+  elements.themeToggle.textContent = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+  elements.themeToggle.setAttribute('aria-pressed', String(isDarkMode));
+  localStorage.setItem('theme', theme);
+}
+
+function initializeTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  setTheme(savedTheme === 'dark' ? 'dark' : 'light');
+}
+
+function initializeEvents() {
+  elements.controls.addEventListener('submit', (event) => {
+    event.preventDefault();
+    updateAndRender();
+  });
+  elements.showAllButton.addEventListener('click', resetFilters);
+  elements.searchInput.addEventListener('input', debounce(updateAndRender));
+  elements.categorySelect.addEventListener('change', updateAndRender);
+  elements.sortSelect.addEventListener('change', updateAndRender);
+  elements.themeToggle.addEventListener('click', () => {
+    setTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
   });
 }
 
-populateCategories();
-renderProducts();
-searchButton.addEventListener('click', renderProducts);
-showAllButton.addEventListener('click', () => {
-  searchInput.value = '';
-  categorySelect.value = 'all';
-  renderProducts();
-});
-searchInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    renderProducts();
-  }
-});
-categorySelect.addEventListener('change', renderProducts);
-sortSelect.addEventListener('change', renderProducts);
+function initializeApp() {
+  populateCategories();
+  initializeTheme();
+  initializeEvents();
+  updateAndRender();
+}
+
+initializeApp();

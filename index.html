@@ -5,18 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Produktfinder</title>
     <link rel="stylesheet" href="src/style.css" />
+    <script src="src/products.js" defer></script>
     <script src="src/productUtils.js" defer></script>
     <script src="src/app.js" defer></script>
   </head>
   <body>
     <main class="page-shell">
+      <div class="theme-switch-container">
+        <button id="theme-toggle" type="button" aria-label="Farbschema wechseln">
+          🌙 Dark Mode
+        </button>
+      </div>
       <header class="hero">
         <p class="eyebrow">KATALOG 2026</p>
         <h1>Finde dein nächstes Lieblingsstück.</h1>
         <p class="intro">Durchsuche die Produktliste direkt im Browser.</p>
       </header>
 
-      <section class="controls" aria-label="Produktliste steuern">
+      <form class="controls" aria-label="Produktliste steuern">
         <div class="field-group field-group--search">
           <label for="search">Suche</label>
           <input id="search" type="search" placeholder="Produkt suchen ..." />
@@ -36,10 +42,10 @@
           </select>
         </div>
         <div class="control-actions">
-          <button id="search-button" type="button">Suchen</button>
+          <button id="search-button" type="submit">Suchen</button>
           <button id="show-all-button" type="button">Alle anzeigen</button>
         </div>
-      </section>
+      </form>
 
       <p id="result-count" class="result-count" aria-live="polite"></p>
       <section id="product-list" class="product-grid" aria-live="polite"></section>
